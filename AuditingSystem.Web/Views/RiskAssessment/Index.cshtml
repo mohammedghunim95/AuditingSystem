@@ -1,0 +1,124 @@
+﻿@model IEnumerable<AuditingSystem.Services.ViewModels.RiskAssessmentVM>
+
+
+@{
+    ViewData["Title"] = "User Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="card-title">Risk Assessment Management View</h4>
+                    </div>
+                   @*  <div class="col-md-6 text-end">
+                        <a class="btn btn-primary me-2" href="~/RiskAssessment/Add">
+                            <i class="fa-solid fa-plus"></i> Add New User
+                        </a>
+                    </div> *@
+                </div>
+                <div class="table-responsive">
+                    <table id="tableList" class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Risk Title</th>
+                                <th>Risk Category</th>
+                                <th>Risk Description</th>
+                                <th>Risk Rating Rationalization</th>
+                                <th>Risk Impact</th>
+                                <th>Risk Likelihood</th>
+                                <th>Inherent Risk Rating</th>
+                                <th>Control Name</th>
+                                <th>Control Description</th>
+                                <th>Control Type</th>
+                                <th>Control Process</th>
+                                <th>Control Frequency</th>
+                                <th>Control Effectiveness</th>
+                                <th>Control Effectiveness Rating</th>
+                                <th>Residual Risk Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.RiskIdentification.Name</td>
+                                    <td>@item.RiskCategory.Name</td>
+                                    <td>@item.RiskIdentification.Description</td>
+                                    <td>@item.RiskIdentification.RiskRatingRationalization</td>
+                                    <td>@item.RiskImpact.Name - @item.RiskImpact.Rate</td>
+                                    <td>@item.RiskLikehood.Name - @item.RiskLikehood.Rate</td>
+                                    <td>@item.RiskIdentification.InherentRiskRating</td>
+                                    <td>@item.Control.Name</td>
+                                    <td>@item.Control.Description</td>
+                                    <td>@item.ControlType.Name</td>
+                                    <td>@item.ControlProcess.Name</td>
+                                    <td>@item.ControlFrequency.Name</td>
+                                    <td>@item.ControlEffectiveness.Name - @item.ControlEffectiveness.Rate</td>
+                                    <td>@item.Control.ControlEffectivenessRating</td>
+                                     
+                                        @if (item.RiskAssessmentList.ResidualRiskRating == "Active Management")
+                                        {
+                                            <td style="background-color:#ff0404">@item.RiskAssessmentList.ResidualRiskRating</td>
+                                        }
+                                        else if (item.RiskAssessmentList.ResidualRiskRating == "Continuous Review")
+                                        {
+                                            <td style="background-color:#ff9600">@item.RiskAssessmentList.ResidualRiskRating</td>
+                                        }
+                                        else if (item.RiskAssessmentList.ResidualRiskRating == "Periodic Monitoring")
+                                        {
+                                            <td style="background-color:#f4f409">@item.RiskAssessmentList.ResidualRiskRating</td>
+                                        }
+                                        else if (item.RiskAssessmentList.ResidualRiskRating == "No major concern")
+                                        {
+                                            <td style="background-color:#05c700">@item.RiskAssessmentList.ResidualRiskRating</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.RiskAssessmentList.ResidualRiskRating</td>
+                                        }
+                                     
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(document).on("click", "#btnDelete", function () {
+            var btnId = $(this);
+            var table = $('#tableList');
+            if (confirm("Are you sure to delete it?")) {
+                $.ajax({
+                    url: "/api/users/" + btnId.attr("data-actions-id"),
+                    method: "DELETE",
+                    dataType: 'json',
+                    contentType: "application/json",
+                    success: function (response) {
+                        alert("The Delete is Successfully");
+                        btnId.parents("#tr").remove();
+                    },
+                    error: function (error) {
+                        alert("Error Details → " + error.responseText);
+                        if (error.responseJSON && error.responseJSON.errors) {
+                            $.each(error.responseJSON.errors, function (key, value) {
+                                $("#" + key).siblings(".text-danger").text(value);
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
